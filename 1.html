@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>soal 1</title>
+<style>
+div {
+  width: absolute;
+  padding: 10px;
+  border: 5px solid red;
+  margin: 0;
+}
+
+#s_minutes {
+  padding: 10px;
+  background-color: red;
+  margin: 0;
+}
+
+#s_seconds {
+  padding: 10px;
+  background-color: red;
+  margin: 0;
+}
+
+#s_ms {
+  padding: 10px;
+  background-color: red;
+  margin: 0;
+}
+
+#mydiv {
+  position: absolute;
+  z-index: 9;
+  background-color: #f1f1f1;
+  text-align: center;
+  border: 1px solid #d3d3d3;
+}
+
+#mydivheader {
+  padding: 30px;
+  cursor: move;
+  z-index: 10;
+  background-color: red;
+  color: #fff;
+}
+</style>
+</head>
+<body>
+<div>
+    <p>1) Menggabungkan text</p>
+    <input type="text" id="pertama"> Concat <input type="text" id="kedua"> <button id="proses" onclick="fungsi1()">=</button> <input type="text" id="hasil">
+</div><br>
+<div>
+  <p>2) Box berjalan</p>
+  <span style="text-decoration: line-through;">maaf pak/bu saya mentok</span>
+</div><br>
+<div>
+  <p>3) Stopwatch</p>
+  <span id="s_minutes">00</span> :
+  <span id="s_seconds">00</span> :
+  <span id="s_ms">00</span><br><br>
+  <button id="tombol" onclick="toggle()">Start</button>
+</div><br>
+<div>
+  <p>4) Draggable</p><br><br>
+  <span id="mydiv">
+    <span id="mydivheader"></span>
+  </span><br><br><br>
+</div><br>
+<script>
+  function fungsi1() {
+    document.getElementById("hasil").value = document.getElementById("pertama").value + document.getElementById("kedua").value;
+}
+  </script>
+  <script>
+    let offset = 0,
+  paused = true;
+
+render();
+  
+function startStopwatch(evt) {
+  if (paused) {
+    paused = false;
+    offset -= Date.now();
+    render();
+  }
+}
+
+function stopStopwatch(evt) {
+  if (!paused) {
+    paused = true;
+    offset += Date.now();
+  }
+}
+
+function resetStopwatch(evt) {
+  if (paused) {
+    offset = 0;
+    render();
+  } else {
+    offset = -Date.now();
+  }
+}
+
+function format(value, scale, modulo, padding) {
+  value = Math.floor(value / scale) % modulo;
+  return value.toString().padStart(padding, 0);
+}
+
+function render() {
+  var value = paused ? offset : Date.now() + offset;
+
+  document.querySelector('#s_ms').textContent = format(value, 10, 100, 2);
+  document.querySelector('#s_seconds').textContent = format(value, 1000, 60, 2);
+  document.querySelector('#s_minutes').textContent = format(value, 60000, 60, 2);
+  
+  if(!paused) {
+    requestAnimationFrame(render);
+  }
+}
+
+function toggle(){
+  var buttonElement = document.getElementById("tombol");
+
+        if (paused && offset == 0) {
+            buttonElement.innerHTML = "Stop";
+            startStopwatch();
+        } else if(paused) {
+            buttonElement.innerHTML = "Start";
+            resetStopwatch();
+        } else {
+          buttonElement.innerHTML = "Reset";
+          stopStopwatch();
+        }
+    }
+  </script>
+  <script>
+    dragElement(document.getElementById("mydiv"));
+    
+    function dragElement(elmnt) {
+      var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      if (document.getElementById(elmnt.id + "header")) {
+        document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+      } else {
+        elmnt.onmousedown = dragMouseDown;
+      }
+    
+      function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+      }
+    
+      function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+      }
+    
+      function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+    }
+    </script>
+</body>
+</html>
